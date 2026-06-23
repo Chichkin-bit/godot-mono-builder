@@ -1,0 +1,6 @@
+/godot-source/
+
+__pycache__/
+*.pyc
+
+.env
