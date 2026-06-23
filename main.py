@@ -6,9 +6,9 @@ import shutil
 def main():
     # Проверка наличия Git:
     if is_tool_installed(['git', '--version']):
-        print("Git успешно найден!")
+        print("Git found successfully!\nGit успешно найден!")
     else:
-        print("Ошибка: Утилита Git не установлена в системе или не добавлена в PATH.")
+        print("Error: Git is not installed on the system or not added to PATH.\nОшибка: Утилита Git не установлена в системе или не добавлена в PATH.")
         return
     
     REPO_URL = 'https://github.com/godotengine/godot.git'
@@ -17,45 +17,45 @@ def main():
     
     # Клонирование репозитория:
     if not Path(TARGET_DIR).exists():
-        if confirm_action('Начать клонировать репозиторий?'):
+        if confirm_action('Start cloning the repository?\nНачать клонировать репозиторий?'):
             if not clone_repository(REPO_URL, TARGET_DIR, branch='4.7-stable'):
-                print("Завершение работы.")
+                print("Exiting.\nЗавершение работы.")
                 return
         else:
-            print("Завершение работы.")
+            print("Exiting.\nЗавершение работы.")
             return
     else:
-        print("Репозиторий успешно найден!")
+        print("Repository found successfully!\nРепозиторий успешно найден!")
 
     # Проверка и установка SCons:
     if is_tool_installed(['scons', '--version']):
-        print("SCons успешно найден!")
+        print("SCons found successfully!\nSCons успешно найден!")
     else:
-        print("SCons не найден. Начинается установка SCons.")
+        print("SCons not found. Starting SCons installation.\nSCons не найден. Начинается установка SCons.")
         if not scons_install():
-            print("Завершение работы.")
+            print("Exiting.\nЗавершение работы.")
             return
     
     # Создание файлов Glue:
     glue_dir_exists, glue_editor_dir_exists = glue_check()
     if glue_dir_exists and glue_editor_dir_exists:
-        print("Файлы Glue успешно найдены!")
+        print("Glue files found successfully!\nФайлы Glue успешно найдены!")
     else:
         params = []
-        if confirm_action('Начать установку зависимостей?'):
-            if confirm_action('Включить поддержку Direct3D 12?'):
+        if confirm_action('Start installing dependencies?\nНачать установку зависимостей?'):
+            if confirm_action('Include Direct3D 12 support?\nВключить поддержку Direct3D 12?'):
                 if install_dependency(['python', 'misc/scripts/install_d3d12_sdk_windows.py']):
                     params.append('d3d12=yes')
                 else: return
             else:
                 params.append('d3d12=no')
-            if confirm_action('Включить поддержку AccessKit?'):
+            if confirm_action('Include AccessKit support?\nВключить поддержку AccessKit?'):
                 if install_dependency(['python', 'misc/scripts/install_accesskit.py']):
                     params.append('accesskit=yes')
                 else: return
             else:
                 params.append('accesskit=no')
-            if confirm_action('Включить поддержку WinRT?'):
+            if confirm_action('Include WinRT support?\nВключить поддержку WinRT?'):
                 if install_dependency(['python', 'misc/scripts/install_winrt.py']):
                     params.append('winrt=yes')
                 else: return
@@ -64,26 +64,26 @@ def main():
         else:
             params.extend(['d3d12=no', 'accesskit=no', 'winrt=no'])
         
-        print('Сборка временного исполняемого файла редактора Godot.')
+        print('Building temporary Godot editor executable.\nСборка временного исполняемого файла редактора Godot.')
         if not build_godot_editor(params):
-            print("Завершение работы.")
+            print("Exiting.\nЗавершение работы.")
             return
 
-        print('Генерация файлов Glue.')
+        print('Generating Glue files.\nГенерация файлов Glue.')
         if not glue_generate():
-            print("Завершение работы.")
+            print("Exiting.\nЗавершение работы.")
             return
 
     # Сборка библиотек:
     if Path('./godot-source/bin/GodotSharp').exists():
-        print("Библиотеки успешно найдены!")
+        print("Libraries found successfully!\nБиблиотеки успешно найдены!")
     else:
         if not library_generate():
-            print("Завершение работы.")
+            print("Exiting.\nЗавершение работы.")
             return
     
     # Генерация шаблона проекта:
-    if confirm_action('Начать сборку шаблона проекта?'):
+    if confirm_action('Start building the project template?\nНачать сборку шаблона проекта?'):
         template_generate(ENCRYPTION_KEY)
 
 
@@ -98,7 +98,7 @@ def confirm_action(message):
         elif user_input == 'n':
             return False
         else:
-            print(f"Некорректные введенные данные!")
+            print("Invalid input!\nНекорректные введенные данные!")
 
 
 def is_tool_installed(command):
@@ -130,7 +130,7 @@ def clone_repository(repo_url, target_dir, *, branch='4.7-stable'):
         subprocess.run(command, check=True)
         return True
     except subprocess.CalledProcessError as err:
-        print(f"Ошибка при клонировании репозитория: {err}")
+        print(f"Error cloning repository: {err}\nОшибка при клонировании репозитория: {err}")
         return False
 
 
@@ -146,7 +146,7 @@ def scons_install():
         subprocess.run(command, check=True)
         return True
     except subprocess.CalledProcessError as err:
-        print(f"Ошибка при установке: {err}")
+        print(f"Error installing scons: {err}\nОшибка при установке scons: {err}")
         return False
 
 
@@ -156,10 +156,10 @@ def install_dependency(dependency_command):
         subprocess.run(dependency_command, cwd=source_dir, check=True)
         return True
     except subprocess.CalledProcessError as err:
-        print(f"Ошибка при установке зависимости: {err}")
+        print(f"Error installing dependency: {err}\nОшибка при установке зависимости: {err}")
         return False
     except FileNotFoundError:
-        print(f"Ошибка: Директория {source_dir} не найдена.")
+        print(f"Error: Directory {source_dir} not found.\nОшибка: Директория {source_dir} не найдена.")
         return False
 
 
@@ -182,10 +182,10 @@ def build_godot_editor(scons_flags):
         subprocess.run(command, cwd=source_dir, check=True)
         return True
     except subprocess.CalledProcessError as err:
-        print(f"Ошибка при сборке временного исполняемого файла редактора Godot: {err}")
+        print(f"Error building temporary Godot editor executable: {err}\nОшибка при сборке временного исполняемого файла редактора Godot: {err}")
         return False
     except FileNotFoundError:
-        print(f"Ошибка: Директория {source_dir} или утилита scons не найдены.")
+        print(f"Error: Directory {source_dir} or scons utility not found.\nОшибка: Директория {source_dir} или утилита scons не найдены.")
         return False
 
 
@@ -202,7 +202,7 @@ def glue_generate():
         subprocess.run([godot_exe_path, '--headless', '--generate-mono-glue', 'modules/mono/glue'], cwd=source_dir, check=True)
         return True
     except subprocess.CalledProcessError as err:
-        print(f"Ошибка при создании файлов Glue: {err}")
+        print(f"Error generating Glue files: {err}\nОшибка при создании файлов Glue: {err}")
         return False
 
 
@@ -218,7 +218,7 @@ def library_generate():
         subprocess.run(command, cwd=source_dir, check=True)
         return True
     except subprocess.CalledProcessError as err:
-        print(f"Ошибка сборки библиотек: {err}")
+        print(f"Error building libraries: {err}\nОшибка сборки библиотек: {err}")
         return False
 
 
@@ -228,11 +228,11 @@ def template_generate(encrypt_key):
 
     try:
         shutil.rmtree(dir_path)
-        print(f"Директория {dir_path} успешно удалена!")
+        print(f"Directory {dir_path} removed successfully!\nДиректория {dir_path} успешно удалена!")
     except FileNotFoundError:
-        print(f"Директория {dir_path} не найдена.")
+        print(f"Directory {dir_path} not found.\nДиректория {dir_path} не найдена.")
     except PermissionError:
-        print(f"Нет прав для удаления директории {dir_path}.")
+        print(f"Permission denied to remove directory {dir_path}.\nНет прав для удаления директории {dir_path}.")
 
     curr_env = os.environ.copy()
     curr_env['SCRIPT_AES256_ENCRYPTION_KEY'] = encrypt_key
@@ -244,9 +244,10 @@ def template_generate(encrypt_key):
     ]
     try:
         subprocess.run(command, cwd=source_dir, env=curr_env, check=True)
-        print(f"Сборка шаблона проекта успешно завершена!\nКлюч шифрования для шаблона проекта: {encrypt_key}")
+        print(f"Project template build completed successfully!\nEncryption key for the project template:\nСборка шаблона проекта успешно завершена!\nКлюч шифрования для шаблона проекта:")
+        print(encrypt_key)
     except subprocess.CalledProcessError as err:
-        print(f"Ошибка при генерации шаблона: {err}")
+        print(f"Error generating template: {err}\nОшибка при генерации шаблона: {err}")
 
 
 main()
